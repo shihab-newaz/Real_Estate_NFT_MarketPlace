@@ -1,0 +1,10 @@
+{
+  "contractName": "NFTMarketplace",
+  "contractAddress": "0x03a8347AE1a8b3B300e8CE0Db1444938363a8Cc5",
+  "deployerAddress": "0x3C555FBDD5Df411DA795c8b9c230b76EA5d1a514",
+  "network": "matic-amoy",
+  "chainId": "80002",
+  "deploymentBlock": 11518722,
+  "timestamp": "2024-09-03T13:54:26.578Z",
+  "transactionHash": "0x6e0d8108fa81250c8631de92372467225dd02ac05e422221416e65033ae402d7"
+}
