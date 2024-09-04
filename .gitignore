@@ -33,9 +33,7 @@ Thumbs.db
 /web3/.env.development.local
 /web3/.env.test.local
 /web3/.env.production.local
-# Hardhat files
-/web3/cache/
-/web3/artifacts/
+
 
 # Next.js specific
 /client/.next/
