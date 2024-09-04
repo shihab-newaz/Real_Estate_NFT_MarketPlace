@@ -1,0 +1,55 @@
+{
+    "name": "Luxurious Beachfront Villa",
+    "description": "A stunning 5-bedroom villa with direct access to a private beach. Features include an infinity pool, home theater, and panoramic ocean views.",
+    "image": "https://ipfs.io/ipfs/QmVMwQfENpxj3BBKqWuQ7i51Kqc4bhHRnXc2KgG2X9cC4i",
+    "external_url": "https://yourrealestatemarketplace.com/properties/luxurious-beachfront-villa",
+    "attributes": [
+      {
+        "trait_type": "Property Type",
+        "value": "Villa"
+      },
+      {
+        "trait_type": "Bedrooms",
+        "value": 5
+      },
+      {
+        "trait_type": "Bathrooms",
+        "value": 6
+      },
+      {
+        "trait_type": "Square Footage",
+        "value": 5000
+      },
+      {
+        "trait_type": "Location",
+        "value": "Malibu, California"
+      },
+      {
+        "trait_type": "Year Built",
+        "value": 2020
+      },
+      {
+        "trait_type": "Amenities",
+        "value": ["Private Beach", "Infinity Pool", "Home Theater", "Smart Home System"]
+      },
+      {
+        "trait_type": "Energy Rating",
+        "value": "A"
+      },
+      {
+        "trait_type": "Parking Spaces",
+        "value": 3
+      }
+    ],
+    "properties": {
+      "address": {
+        "street": "123 Ocean View Drive",
+        "city": "Malibu",
+        "state": "California",
+        "zip": "90265",
+        "country": "United States"
+      },
+      "latitude": 34.0259,
+      "longitude": -118.7798  
+    }
+  }
