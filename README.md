@@ -83,8 +83,4 @@ Welcome to the Real Estate NFT Marketplace, a decentralized platform for buying,
 
 
 
-## Contact
 
-Your Name - [@your_twitter](https://twitter.com/your_twitter) - email@example.com
-
-Project Link: [https://github.com/yourusername/your-repo-name](https://github.com/yourusername/your-repo-name)
