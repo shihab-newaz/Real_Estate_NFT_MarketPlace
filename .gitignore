@@ -22,17 +22,17 @@ yarn-error.log*
 Thumbs.db
 
 # Web3 / Hardhat specific
-/web3/artifacts/
-/web3/cache/
-/web3/coverage/
-/web3/coverage.json
-/web3/typechain/
-/web3/typechain-types/
-/web3/.env
-/web3/.env.local
-/web3/.env.development.local
-/web3/.env.test.local
-/web3/.env.production.local
+client//web3/artifacts/
+client//web3/cache/
+client//web3/coverage/
+client//web3/coverage.json
+client//web3/typechain/
+client//web3/typechain-types/
+client//web3/.env
+client//web3/.env.local
+client//web3/.env.development.local
+client//web3/.env.test.local
+client//web3/.env.production.local
 
 
 # Next.js specific
