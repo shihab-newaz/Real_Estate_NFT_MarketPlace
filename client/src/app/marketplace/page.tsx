@@ -24,7 +24,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 // Import the ABI
-import NFTMarketplaceArtifact from "../../../../web3/artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json";
+import NFTMarketplaceArtifact from "../../../web3/artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json";
 
 const NFT_MARKETPLACE_ABI = NFTMarketplaceArtifact.abi;
 const NFT_MARKETPLACE_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as string;

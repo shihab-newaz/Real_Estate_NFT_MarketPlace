@@ -9,7 +9,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 // Import the ABI
-import NFTMarketplaceArtifact from '../../../../web3/artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json';
+import NFTMarketplaceArtifact from '../../../web3/artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json';
 
 const NFT_MARKETPLACE_ABI = NFTMarketplaceArtifact.abi;
 const NFT_MARKETPLACE_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as string;
