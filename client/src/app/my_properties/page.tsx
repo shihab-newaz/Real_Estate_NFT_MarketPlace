@@ -112,8 +112,8 @@ export default function MyPropertiesPage() {
           <p className="mb-4">Connected Wallet: {walletAddress}</p>
         )}
         {properties.length === 0 ? (
-          <p>You don't own any properties yet.</p>
-        ) : (
+          <p>{`You don't own any properties yet.`}</p>) 
+          : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {properties.map((property) => (
               <Card key={property.propertyId.toString()} className="w-full">
