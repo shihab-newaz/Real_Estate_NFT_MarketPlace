@@ -2,31 +2,16 @@
 
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
-import Image from "next/image";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import {Card,CardContent, CardFooter,CardHeader,CardTitle} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "react-hot-toast";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-// Import the ABI
-import NFTMarketplaceArtifact from "@/web3/artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,AlertDialogDescription,AlertDialogFooter,AlertDialogHeader,AlertDialogTitle,} 
+from "@/components/ui/alert-dialog";
+import Image from "next/image";
+import { NFT_MARKETPLACE_ABI } from '@/utils/contractUtil';
 
-const NFT_MARKETPLACE_ABI = NFTMarketplaceArtifact.abi;
+
 const NFT_MARKETPLACE_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as string;
 
 interface Property {

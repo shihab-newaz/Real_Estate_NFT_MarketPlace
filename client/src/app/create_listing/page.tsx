@@ -1,24 +1,15 @@
 "use client";
 import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { ethers } from "ethers";
-
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card,CardContent,CardFooter,CardHeader,CardTitle,} from "@/components/ui/card";
 import { toast } from "react-hot-toast";
+import {NFT_MARKETPLACE_ABI} from '@/utils/contractUtil';
 
-// Import the ABI directly
-import NFTMarketplaceArtifact from "@/web3/artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json";
 
-const NFT_MARKETPLACE_ABI = NFTMarketplaceArtifact.abi;
 const NFT_MARKETPLACE_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as string;
 
 interface FormData {
