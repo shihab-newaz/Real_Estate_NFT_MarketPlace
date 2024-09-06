@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect, useCallback } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import React, { useState, useEffect, useCallback, Suspense } from "react";
+import { useRouter, useSearchParams, ReadonlyURLSearchParams } from "next/navigation";
 import { ethers } from "ethers";
 import {
   Card,
@@ -54,14 +54,30 @@ interface SearchCriteria {
   location: string;
 }
 
-export default function SearchPage() {
-  const router = useRouter();
+function SearchParamsWrapper({ children }: { children: (searchParams: ReadonlyURLSearchParams) => React.ReactNode }) {
   const searchParams = useSearchParams();
+  return children(searchParams);
+}
+interface SearchPageContentProps {
+  searchParams: ReadonlyURLSearchParams;
+}
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SearchParamsWrapper>
+        {(searchParams) => (
+          <SearchPageContent searchParams={searchParams} />
+        )}
+      </SearchParamsWrapper>
+    </Suspense>
+  );
+}
+
+function SearchPageContent({ searchParams }: SearchPageContentProps) {
+  const router = useRouter();
   const [properties, setProperties] = useState<Property[]>([]);
   const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
-  const [currentImageIndex, setCurrentImageIndex] = useState<{
-    [key: number]: number;
-  }>({});
+  const [currentImageIndex, setCurrentImageIndex] = useState<{[key: number]: number;}>({});
   const [isLoading, setIsLoading] = useState(true);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [selectedPropertyId, setSelectedPropertyId] = useState<bigint | null>(null);
