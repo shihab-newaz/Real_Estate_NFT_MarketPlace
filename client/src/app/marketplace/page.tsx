@@ -2,15 +2,16 @@
 
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
-import {Card,CardContent, CardFooter,CardHeader,CardTitle} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { toast } from "react-hot-toast";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,AlertDialogDescription,AlertDialogFooter,AlertDialogHeader,AlertDialogTitle,} 
+import {Card,CardContent,CardFooter,CardHeader,CardTitle,} from "@/components/ui/card";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } 
 from "@/components/ui/alert-dialog";
-import Image from "next/image";
 import { NFT_MARKETPLACE_ABI } from '@/utils/contractUtil';
-
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const NFT_MARKETPLACE_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as string;
 
@@ -29,14 +30,13 @@ interface Property {
 
 export default function MarketplacePage() {
   const [properties, setProperties] = useState<Property[]>([]);
-  const [currentImageIndex, setCurrentImageIndex] = useState<{
-    [key: number]: number;
-  }>({});
+  const [currentImageIndex, setCurrentImageIndex] = useState<{[key: number]: number;}>({});
   const [isLoading, setIsLoading] = useState(true);
   const [userAddress, setUserAddress] = useState<string | null>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [selectedPropertyId, setSelectedPropertyId] = useState<bigint | null>(null);
-
+  const [searchTerm, setSearchTerm] = useState("");
+  const router=useRouter();
   useEffect(() => {
     connectWallet();
     fetchProperties();
@@ -194,6 +194,12 @@ export default function MarketplacePage() {
     });
   };
 
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    router.push(`/search?term=${encodeURIComponent(searchTerm)}`);
+  };
+
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -206,6 +212,21 @@ export default function MarketplacePage() {
     <div className="min-h-screen bg-gray-100">
       <main className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8">Real Estate NFT Marketplace</h1>
+        <form onSubmit={handleSearch} className="mb-8">
+          <div className="flex">
+            <Input
+              type="text"
+              placeholder="Search properties..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="flex-grow"
+            />
+            <Button type="submit" className="ml-2">
+              <Search className="h-4 w-4 mr-2" />
+              Search
+            </Button>
+          </div>
+        </form>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {properties.map((property) => (
             <Card key={property.propertyId.toString()} className="w-full">

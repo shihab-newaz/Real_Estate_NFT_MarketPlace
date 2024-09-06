@@ -35,7 +35,60 @@ const ListPropertyForm: React.FC = () => {
   const [isMinting, setIsMinting] = useState<boolean>(false);
   const [tokenId, setTokenId] = useState<bigint | null>(null);
   const [networkError, setNetworkError] = useState<string | null>(null);
+  const [isWalletConnected, setIsWalletConnected] = useState<boolean>(false);
 
+
+  useEffect(() => {
+    checkWalletConnection();
+    window.ethereum?.on('accountsChanged', handleAccountsChanged);
+    return () => {
+      window.ethereum?.removeListener('accountsChanged', handleAccountsChanged);
+    };
+  }, []);
+
+  const checkWalletConnection = async () => {
+    if (typeof window.ethereum !== 'undefined') {
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+        setIsWalletConnected(accounts.length > 0);
+      } catch (error) {
+        console.error("Failed to check wallet connection:", error);
+        setIsWalletConnected(false);
+      }
+    } else {
+      setIsWalletConnected(false);
+    }
+  };
+
+  const handleAccountsChanged = (accounts: string[]) => {
+    setIsWalletConnected(accounts.length > 0);
+    if (accounts.length === 0) {
+      // Reset form state when wallet is disconnected
+      setFormData({
+        tokenURI: "",
+        price: "",
+        propertyType: "",
+        propertyImage: "",
+        squareFootage: "",
+        location: "",
+      });
+      setTokenId(null);
+    }
+  };
+
+  const connectWallet = async () => {
+    if (typeof window.ethereum !== 'undefined') {
+      try {
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        setIsWalletConnected(true);
+      } catch (error) {
+        console.error("Failed to connect wallet:", error);
+        toast.error("Failed to connect wallet. Please try again.");
+      }
+    } else {
+      toast.error("Please install MetaMask to use this feature");
+    }
+  };
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -272,7 +325,12 @@ const ListPropertyForm: React.FC = () => {
         </CardHeader>
         <CardContent>
           {networkError && <p className="text-red-500">{networkError}</p>}
-          {NFT_MARKETPLACE_ADDRESS ? (
+          {!isWalletConnected ? (
+            <div className="text-center">
+              <p className="mb-4">Please connect your wallet to list a property.</p>
+              <Button onClick={connectWallet}>Connect Wallet</Button>
+            </div>
+          ) : NFT_MARKETPLACE_ADDRESS ?(
             <form onSubmit={handleSubmit}>
               <div className="space-y-4">
                 <div>
