@@ -113,7 +113,7 @@ export default function MyPropertiesPage() {
         <h1 className="text-3xl font-bold mb-8">My Properties</h1>
         <p className="mb-4">Connected Wallet: {address}</p>
         {sortedProperties.length === 0 ? (
-          <p className="text-center text-xl mt-8">You don't own any properties yet.</p>
+          <p className="text-center text-xl mt-8">You don&apos;t own any properties yet.</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {sortedProperties.map((property) => (
