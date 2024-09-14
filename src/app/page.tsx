@@ -40,13 +40,13 @@ const HomePage: React.FC = () => {
     // Fetch featured properties and market stats here
     // For now, we'll use dummy data
     setFeaturedProperties([
-      { id: 1, title: 'Luxury Condo', price: 250000, location: 'New York', type: 'Apartment', img:'/luxury.png' },
-      { id: 2, title: 'Beachfront Villa', price: 500000, location: 'Miami', type: 'House', img:'/villa.png' },
-      { id: 3, title: 'Downtown Loft', price: 180000, location: 'Chicago', type: 'Apartment', img:'/loft.png' },
+      { id: 1, title: 'Luxury Condo', price: 2.5, location: 'New York', type: 'Apartment', img:'/luxury.png' },
+      { id: 2, title: 'Beachfront Villa', price: 2.0, location: 'Miami', type: 'House', img:'/villa.png' },
+      { id: 3, title: 'Downtown Loft', price: 1.0, location: 'Chicago', type: 'Apartment', img:'/loft.png' },
     ]);
     setMarketStats({
       totalListings: 156,
-      totalValue: 45000000,
+      totalValue: 40,
       recentSales: 12
     });
   }, []);
@@ -96,7 +96,7 @@ const HomePage: React.FC = () => {
           </div>
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-semibold mb-2 text-gray-700">Total Value</h2>
-            <p className="text-3xl font-bold text-blue-600">${marketStats.totalValue.toLocaleString()}</p>
+            <p className="text-3xl font-bold text-blue-600">{marketStats.totalValue.toLocaleString()} MATIC</p>
           </div>
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-semibold mb-2 text-gray-700">Recent Sales</h2>
@@ -121,7 +121,7 @@ const HomePage: React.FC = () => {
                 <h3 className="text-xl font-semibold mb-2 text-gray-800">{property.title}</h3>
                 <p className="text-gray-600 mb-2">{property.location}</p>
                 <p className="text-gray-600 mb-2">{property.type}</p>
-                <p className="text-xl font-bold mb-4 text-gray-800">${property.price.toLocaleString()}</p>
+                <p className="text-xl font-bold mb-4 text-gray-800">{property.price.toLocaleString()} MATIC</p>
                 <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition duration-300">View Property</button>
               </div>
             </div>

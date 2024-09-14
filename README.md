@@ -14,7 +14,7 @@ The Real Estate NFT Marketplace is deployed at:
 - View detailed property information and history
 - User-friendly interface for easy navigation and transactions
 - Secure, transparent, and decentralized operations
-
+- Persistent wallet connection using Redis
 ## Technology Stack
 
 - Smart Contracts: Solidity
@@ -22,6 +22,7 @@ The Real Estate NFT Marketplace is deployed at:
 - Blockchain Interaction: ethers.js
 - Development Environment: Hardhat
 - Styling: Tailwind CSS
+- Database: Redis (for wallet connection persistence)
 
 ## Getting Started
 
