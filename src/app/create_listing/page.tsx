@@ -1,14 +1,14 @@
 "use client";
-import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { ethers } from "ethers";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card,CardContent,CardFooter,CardHeader,CardTitle,} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "react-hot-toast";
-import {NFT_MARKETPLACE_ABI} from '@/utils/contractUtil';
-
+import { NFT_MARKETPLACE_ABI } from '@/utils/contractUtil';
+import { useWalletConnection } from '@/hooks/useWalletConnection';
 
 const NFT_MARKETPLACE_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as string;
 
@@ -23,6 +23,7 @@ interface FormData {
 
 const ListPropertyForm: React.FC = () => {
   const router = useRouter();
+  const { address, connectWallet } = useWalletConnection();
   const [formData, setFormData] = useState<FormData>({
     tokenURI: "",
     price: "",
@@ -35,117 +36,53 @@ const ListPropertyForm: React.FC = () => {
   const [isMinting, setIsMinting] = useState<boolean>(false);
   const [tokenId, setTokenId] = useState<bigint | null>(null);
   const [networkError, setNetworkError] = useState<string | null>(null);
-  const [isWalletConnected, setIsWalletConnected] = useState<boolean>(false);
 
-
-  useEffect(() => {
-    checkWalletConnection();
-    window.ethereum?.on('accountsChanged', handleAccountsChanged);
-    return () => {
-      window.ethereum?.removeListener('accountsChanged', handleAccountsChanged);
-    };
-  }, []);
-
-  const checkWalletConnection = async () => {
-    if (typeof window.ethereum !== 'undefined') {
-      try {
-        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-        setIsWalletConnected(accounts.length > 0);
-      } catch (error) {
-        console.error("Failed to check wallet connection:", error);
-        setIsWalletConnected(false);
-      }
-    } else {
-      setIsWalletConnected(false);
-    }
-  };
-
-  const handleAccountsChanged = (accounts: string[]) => {
-    setIsWalletConnected(accounts.length > 0);
-    if (accounts.length === 0) {
-      // Reset form state when wallet is disconnected
-      setFormData({
-        tokenURI: "",
-        price: "",
-        propertyType: "",
-        propertyImage: "",
-        squareFootage: "",
-        location: "",
-      });
-      setTokenId(null);
-    }
-  };
-
-  const connectWallet = async () => {
-    if (typeof window.ethereum !== 'undefined') {
-      try {
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
-        setIsWalletConnected(true);
-      } catch (error) {
-        console.error("Failed to connect wallet:", error);
-        toast.error("Failed to connect wallet. Please try again.");
-      }
-    } else {
-      toast.error("Please install MetaMask to use this feature");
-    }
-  };
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  }, []);
 
-  const MAX_RETRIES = 3;
-  const RETRY_DELAY = 2000; // 2 seconds
-
-  const mintToken = async () => {
+  const mintToken = useCallback(async () => {
     setIsMinting(true);
     let retries = 0;
-  
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY = 2000; // 2 seconds
+
     const attemptMint = async (): Promise<void> => {
       try {
         if (typeof window.ethereum === 'undefined') {
           throw new Error('Please install MetaMask to use this feature');
         }
-  
+
         if (!NFT_MARKETPLACE_ADDRESS) {
           throw new Error('Contract address not configured');
         }
-  
+
         const provider = new ethers.BrowserProvider(window.ethereum as ethers.Eip1193Provider);
         const signer = await provider.getSigner();
         const contract = new ethers.Contract(NFT_MARKETPLACE_ADDRESS, NFT_MARKETPLACE_ABI, signer);
-  
+
         console.log('Attempting to mint token with URI:', formData.tokenURI);
-  
-        // Get the current fee data
+
         const feeData = await provider.getFeeData();
         const adjustedGasPrice = feeData.gasPrice ? 
-          BigInt(Math.floor(Number(feeData.gasPrice) * 1.2)) : // Increase by 20%
+          BigInt(Math.floor(Number(feeData.gasPrice) * 1.2)) : 
           undefined;
-  
-        console.log('Adjusted gas price:', adjustedGasPrice ? ethers.formatUnits(adjustedGasPrice, 'gwei') + ' Gwei' : 'Using network estimation');
-  
-        // Estimate gas limit
+
         const estimatedGas = await contract.createToken.estimateGas(formData.tokenURI);
-        const gasLimit = BigInt(Math.floor(Number(estimatedGas) * 1.5)); // Add 50% buffer
-  
-        console.log('Estimated gas:', estimatedGas.toString());
-        console.log('Gas limit:', gasLimit.toString());
-  
+        const gasLimit = BigInt(Math.floor(Number(estimatedGas) * 1.5));
+
         const tx = await contract.createToken(formData.tokenURI, { 
           gasLimit,
           gasPrice: adjustedGasPrice
         });
-  
-        console.log('Transaction sent:', tx.hash);
-  
+
         const receipt = await tx.wait();
-        console.log('Transaction receipt:', receipt);
-  
+
         const transferEvent = receipt.logs.find(
           (log: any) => log.topics[0] === ethers.id("Transfer(address,address,uint256)")
         );
-  
+
         if (transferEvent) {
           const tokenIdBigInt = BigInt(transferEvent.topics[3]);
           setTokenId(tokenIdBigInt);
@@ -159,9 +96,6 @@ const ListPropertyForm: React.FC = () => {
         if (error instanceof Error) {
           if ('code' in error) {
             const ethersError = error as ethers.EthersError;
-            console.error('Ethers Error Code:', ethersError.code);
-            console.error('Ethers Error Message:', ethersError.message);
-            
             switch(ethersError.code) {
               case 'ACTION_REJECTED':
                 toast.error('Transaction was rejected by the user.');
@@ -195,18 +129,15 @@ const ListPropertyForm: React.FC = () => {
         } else {
           toast.error('An unknown error occurred. Please check the console and try again.');
         }
+      } finally {
+        setIsMinting(false);
       }
     };
-  
-    try {
-      await attemptMint();
-    } finally {
-      setIsMinting(false);
-    }
-  };
 
+    await attemptMint();
+  }, [formData.tokenURI]);
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
 
@@ -215,21 +146,12 @@ const ListPropertyForm: React.FC = () => {
         throw new Error("Please install MetaMask to use this feature");
       }
 
-      const provider = new ethers.BrowserProvider(
-        window.ethereum as ethers.Eip1193Provider
-      );
+      const provider = new ethers.BrowserProvider(window.ethereum as ethers.Eip1193Provider);
       const signer = await provider.getSigner();
-      const contract = new ethers.Contract(
-        NFT_MARKETPLACE_ADDRESS,
-        NFT_MARKETPLACE_ABI,
-        signer
-      );
+      const contract = new ethers.Contract(NFT_MARKETPLACE_ADDRESS, NFT_MARKETPLACE_ABI, signer);
 
       const listingFee = await contract.getListingFee();
-      console.log("Listing Fee:", ethers.formatEther(listingFee), "MATIC");
-
       const priceInWei = ethers.parseEther(formData.price);
-      console.log("Price in Wei:", priceInWei.toString());
 
       if (tokenId === null) {
         throw new Error("Token has not been minted yet");
@@ -244,42 +166,24 @@ const ListPropertyForm: React.FC = () => {
         formData.location,
       ];
 
-      // Fixed gas limit
-      const gasLimit = BigInt(500000); // Adjust this value as needed
+      const gasLimit = BigInt(500000);
+      const gasPriceGwei = BigInt(50);
+      const gasPrice = gasPriceGwei * BigInt(1e9);
 
-      // Fixed gas price (in Gwei)
-      const gasPriceGwei = BigInt(50); // Adjust this value as needed
-      const gasPrice = gasPriceGwei * BigInt(1e9); // Convert Gwei to Wei
-
-      console.log("Gas Limit:", gasLimit.toString());
-      console.log("Gas Price:", ethers.formatUnits(gasPrice, "gwei"), "Gwei");
-
-      // Check account balance
       const balance = await provider.getBalance(signer.getAddress());
-      console.log("Account Balance:", ethers.formatEther(balance), "MATIC");
-
-      // Estimate the total cost of the transaction
       const estimatedCost = gasLimit * gasPrice + listingFee;
-      console.log(
-        "Estimated Transaction Cost:",
-        ethers.formatEther(estimatedCost),
-        "MATIC"
-      );
 
       if (balance < estimatedCost) {
         throw new Error("Insufficient funds to cover gas and listing fee");
       }
 
-      // Send the transaction
       const tx = await contract.listProperty(...transactionParameters, {
         value: listingFee,
         gasLimit: gasLimit,
         gasPrice: gasPrice,
       });
 
-      console.log("Transaction sent:", tx.hash);
-      const receipt = await tx.wait();
-      console.log("Transaction receipt:", receipt);
+      await tx.wait();
 
       toast.success("Property listed successfully!");
       router.push("/marketplace");
@@ -289,17 +193,12 @@ const ListPropertyForm: React.FC = () => {
       if (error instanceof Error) {
         if ("code" in error) {
           const ethersError = error as ethers.EthersError;
-          console.error("Ethers Error Code:", ethersError.code);
-          console.error("Ethers Error Message:", ethersError.message);
-
           switch (ethersError.code) {
             case "ACTION_REJECTED":
               toast.error("Transaction was rejected by the user.");
               break;
             case "INSUFFICIENT_FUNDS":
-              toast.error(
-                "Insufficient MATIC to complete the transaction. Make sure you have enough MATIC to cover the listing fee and gas."
-              );
+              toast.error("Insufficient MATIC to complete the transaction. Make sure you have enough MATIC to cover the listing fee and gas.");
               break;
             default:
               toast.error(`Ethereum error: ${ethersError.message}`);
@@ -308,29 +207,35 @@ const ListPropertyForm: React.FC = () => {
           toast.error(`Error: ${error.message}`);
         }
       } else {
-        toast.error(
-          "An unknown error occurred. Please check the console and try again."
-        );
+        toast.error("An unknown error occurred. Please check the console and try again.");
       }
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [formData, tokenId, router]);
+
+  useEffect(() => {
+    if (address) {
+      setNetworkError(null);
+    } else {
+      setNetworkError("Please connect your wallet to list a property.");
+    }
+  }, [address]);
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-200">
+    <div className="flex justify-center items-center min-h-screen bg-gray-200 py-8">
       <Card className="w-full max-w-md mx-auto">
         <CardHeader>
           <CardTitle>List Your Property</CardTitle>
         </CardHeader>
         <CardContent>
-          {networkError && <p className="text-red-500">{networkError}</p>}
-          {!isWalletConnected ? (
+          {networkError && <p className="text-red-500 mb-4">{networkError}</p>}
+          {!address ? (
             <div className="text-center">
               <p className="mb-4">Please connect your wallet to list a property.</p>
               <Button onClick={connectWallet}>Connect Wallet</Button>
             </div>
-          ) : NFT_MARKETPLACE_ADDRESS ?(
+          ) : NFT_MARKETPLACE_ADDRESS ? (
             <form onSubmit={handleSubmit}>
               <div className="space-y-4">
                 <div>
@@ -348,11 +253,7 @@ const ListPropertyForm: React.FC = () => {
                   onClick={mintToken}
                   disabled={isMinting || !!tokenId}
                 >
-                  {isMinting
-                    ? "Minting..."
-                    : tokenId
-                    ? "Token Minted"
-                    : "Mint Token"}
+                  {isMinting ? "Minting..." : tokenId ? "Token Minted" : "Mint Token"}
                 </Button>
                 {tokenId && <p>Token ID: {tokenId.toString()}</p>}
                 <div>
@@ -416,10 +317,7 @@ const ListPropertyForm: React.FC = () => {
               </div>
             </form>
           ) : (
-            <p>
-              Loading contract address... If this persists, please check your
-              configuration.
-            </p>
+            <p>Loading contract address... If this persists, please check your configuration.</p>
           )}
         </CardContent>
       </Card>

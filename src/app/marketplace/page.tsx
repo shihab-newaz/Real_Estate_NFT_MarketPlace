@@ -1,16 +1,30 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { toast } from "react-hot-toast";
-import {Card,CardContent,CardFooter,CardHeader,CardTitle,} from "@/components/ui/card";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } 
-from "@/components/ui/alert-dialog";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useWalletConnection } from '@/hooks/useWalletConnection';
 import { NFT_MARKETPLACE_ABI } from '@/utils/contractUtil';
 import { useRouter } from "next/navigation";
+import { 
+  AlertDialog, 
+  AlertDialogAction, 
+  AlertDialogCancel, 
+  AlertDialogContent, 
+  AlertDialogDescription, 
+  AlertDialogFooter, 
+  AlertDialogHeader, 
+  AlertDialogTitle 
+} from "@/components/ui/alert-dialog";
 import Image from "next/image";
 
 const NFT_MARKETPLACE_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as string;
@@ -30,33 +44,17 @@ interface Property {
 
 export default function MarketplacePage() {
   const [properties, setProperties] = useState<Property[]>([]);
-  const [currentImageIndex, setCurrentImageIndex] = useState<{[key: number]: number;}>({});
+  const [currentImageIndex, setCurrentImageIndex] = useState<{[key: number]: number}>({});
   const [isLoading, setIsLoading] = useState(true);
-  const [userAddress, setUserAddress] = useState<string | null>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [selectedPropertyId, setSelectedPropertyId] = useState<bigint | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const router=useRouter();
+  const router = useRouter();
+  const { address } = useWalletConnection();
+  
   useEffect(() => {
-    connectWallet();
     fetchProperties();
   }, []);
-
-  const connectWallet = async () => {
-    try {
-      if (typeof window.ethereum === "undefined") {
-        throw new Error("Please install MetaMask to use this feature");
-      }
-
-      const provider = new ethers.BrowserProvider(window.ethereum as ethers.Eip1193Provider);
-      const signer = await provider.getSigner();
-      const address = await signer.getAddress();
-      setUserAddress(address);
-    } catch (error) {
-      console.error("Error connecting wallet:", error);
-      toast.error("Failed to connect wallet. Please try again.");
-    }
-  };
 
   const fetchProperties = async () => {
     setIsLoading(true);
@@ -92,12 +90,16 @@ export default function MarketplacePage() {
   };
 
   const handleBuy = async (propertyId: bigint) => {
+    if (!address) {
+      toast.error("Please connect your wallet to buy properties");
+      return;
+    }
     setSelectedPropertyId(propertyId);
     setIsConfirmOpen(true);
   };
 
   const confirmPurchase = async () => {
-    if (!selectedPropertyId) return;
+    if (!selectedPropertyId || !address) return;
     setIsConfirmOpen(false);
     const toastId = toast.loading("Processing purchase...");
     try {
@@ -199,7 +201,6 @@ export default function MarketplacePage() {
     router.push(`/search?term=${encodeURIComponent(searchTerm)}`);
   };
 
-
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -227,6 +228,11 @@ export default function MarketplacePage() {
             </Button>
           </div>
         </form>
+        {!address && (
+          <div className="mb-8 p-4 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded">
+            Please connect your wallet using the button in the navbar to interact with the marketplace.
+          </div>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {properties.map((property) => (
             <Card key={property.propertyId.toString()} className="w-full">
@@ -237,10 +243,8 @@ export default function MarketplacePage() {
                 <div className="relative aspect-w-16 aspect-h-9 mb-4">
                   <Image
                     src={
-                      property.propertyImage ||
-                      `/placeholder${
-                        (currentImageIndex[Number(property.propertyId)] % 4) + 1
-                      }.jpg`
+                      // property.propertyImage ||
+                      `/property(1).png`
                     }
                     alt={`Property ${property.propertyId}`}
                     width={400}
@@ -270,7 +274,7 @@ export default function MarketplacePage() {
                 </p>
               </CardContent>
               <CardFooter>
-                {userAddress && userAddress.toLowerCase() === property.seller.toLowerCase() ? (
+                {address && address.toLowerCase() === property.seller.toLowerCase() ? (
                   <Button disabled className="w-full">
                     Your Listing
                   </Button>
@@ -278,8 +282,9 @@ export default function MarketplacePage() {
                   <Button
                     onClick={() => handleBuy(property.propertyId)}
                     className="w-full"
+                    disabled={!address}
                   >
-                    Buy Property
+                    {address ? "Buy Property" : "Connect Wallet to Buy"}
                   </Button>
                 )}
               </CardFooter>
