@@ -1,5 +1,5 @@
+// src\app\navbar.tsx
 'use client';
-
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -19,9 +19,9 @@ export default function Navbar() {
         setIsMenuOpen(!isMenuOpen);
     };
 
-    useEffect(() => {
-        console.log("Address:", address);
-    }, [address]);
+    // useEffect(() => {
+    //     console.log("Address:", address);
+    // }, [address]);
 
     const handleConnectWallet = async () => {
         await connectWallet();

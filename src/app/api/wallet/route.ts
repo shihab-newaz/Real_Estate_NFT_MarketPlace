@@ -1,5 +1,4 @@
-// File: src/app/api/wallet/route.ts
-
+// src/app/api/wallet/route.ts
 import { NextResponse } from 'next/server';
 import redis from '@/lib/redis';
 

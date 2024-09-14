@@ -1,3 +1,4 @@
+// src\app\marketplace\page.tsx
 "use client";
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
@@ -26,6 +27,7 @@ import {
   AlertDialogTitle 
 } from "@/components/ui/alert-dialog";
 import Image from "next/image";
+import { BeatLoader } from "react-spinners";
 
 const NFT_MARKETPLACE_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as string;
 
@@ -49,6 +51,7 @@ export default function MarketplacePage() {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [selectedPropertyId, setSelectedPropertyId] = useState<bigint | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isPurchasing, setIsPurchasing] = useState(false);
   const router = useRouter();
   const { address } = useWalletConnection();
   
@@ -101,6 +104,7 @@ export default function MarketplacePage() {
   const confirmPurchase = async () => {
     if (!selectedPropertyId || !address) return;
     setIsConfirmOpen(false);
+    setIsPurchasing(true);
     const toastId = toast.loading("Processing purchase...");
     try {
       if (typeof window.ethereum === "undefined") {
@@ -177,6 +181,8 @@ export default function MarketplacePage() {
           id: toastId,
         });
       }
+    } finally {
+      setIsPurchasing(false);
     }
   };
 
@@ -242,10 +248,7 @@ export default function MarketplacePage() {
               <CardContent>
                 <div className="relative aspect-w-16 aspect-h-9 mb-4">
                   <Image
-                    src={
-                      // property.propertyImage ||
-                      `/property(1).png`
-                    }
+                    src={`/property(1).png`}
                     alt={`Property ${property.propertyId}`}
                     width={400}
                     height={225}
@@ -282,9 +285,15 @@ export default function MarketplacePage() {
                   <Button
                     onClick={() => handleBuy(property.propertyId)}
                     className="w-full"
-                    disabled={!address}
+                    disabled={!address || isPurchasing}
                   >
-                    {address ? "Buy Property" : "Connect Wallet to Buy"}
+                    {isPurchasing ? (
+                      <BeatLoader size={8} color="#ffffff" />
+                    ) : address ? (
+                      "Buy Property"
+                    ) : (
+                      "Connect Wallet to Buy"
+                    )}
                   </Button>
                 )}
               </CardFooter>

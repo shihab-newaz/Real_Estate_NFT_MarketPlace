@@ -1,5 +1,5 @@
+// src\app\search\page.tsx
 'use client';
-
 import React, { useState, useEffect, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams, ReadonlyURLSearchParams } from "next/navigation";
 import { ethers } from "ethers";
