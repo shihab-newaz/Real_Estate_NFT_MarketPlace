@@ -66,6 +66,23 @@ The Real Estate NFT Marketplace is deployed at:
 
 6. Open your browser and navigate to `http://localhost:3000`
 
+### Docker Setup (Optional)
+Prerequisites
+
+- Docker installed on your machine
+- Docker Hub account (for publishing)
+
+### Building the Docker Image
+
+- Ensure you're in the root directory of the project.
+- Build the Docker image:
+docker build -t <image-name> .
+
+- Once the build is complete, you can run the container locally:
+docker run -p 3000:3000 -p 6379:6379 <image-name>
+
+Access the application at http://localhost:3000
+
 ## Metamask Configuration for Polygon Mumbai
 
 To interact with the marketplace on the Polygon Mumbai testnet, you need to configure your Metamask wallet:

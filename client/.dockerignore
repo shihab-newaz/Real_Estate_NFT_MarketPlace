@@ -1,0 +1,54 @@
+# Next.js build output
+.next
+out
+
+# Dependencies
+node_modules
+**/node_modules
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Miscellaneous
+.git
+.gitignore
+README.md
+*.md
+
+# Editor directories and files
+.vscode
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Testing
+coverage
+
+# Production
+build
+
+# Mac files
+.DS_Store
+
+# Windows files
+Thumbs.db
+
+# Debug files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
+*.tmp
+*.temp

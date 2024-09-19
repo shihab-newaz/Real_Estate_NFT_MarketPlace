@@ -3,6 +3,8 @@
  */
 require('dotenv').config();
 require("@nomicfoundation/hardhat-ethers");
+require('hardhat-deploy');
+const path = require('path');
 
 module.exports = {
   solidity: {
@@ -27,6 +29,11 @@ module.exports = {
     sources: "./contracts",
     tests: "./test",
     cache: "./cache",
-    artifacts: "./artifacts"
+    artifacts: "..client/src/utils"
+  },
+  // Add this new configuration to generate artifacts in ../src/utils
+  outputArtifacts: {
+    path: path.resolve(__dirname, '../src/utils'),
+    runOnCompile: true,
   },
 };
