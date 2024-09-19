@@ -22,7 +22,7 @@ The Real Estate NFT Marketplace is deployed at:
 - Blockchain Interaction: ethers.js
 - Development Environment: Hardhat
 - Styling: Tailwind CSS
-- Database: Redis (for wallet connection persistence)
+- Database: Redis (Upstash)
 
 ## Getting Started
 
@@ -51,10 +51,13 @@ The Real Estate NFT Marketplace is deployed at:
      ```
      NEXT_PUBLIC_CONTRACT_ADDRESS=your_deployed_contract_address
      NEXT_PUBLIC_RPC_URL=your_rpc_url
+     UPSTASH_REDIS_REST_URL=your_upstash_redis_rest_url
+     UPSTASH_REDIS_REST_TOKEN=your_upstash_redis_rest_token
      ```
 
 4. Compile and deploy smart contracts:
    ```
+   cd web3
    npx hardhat compile
    npx hardhat run scripts/deploy.js --network mumbai
    ```
