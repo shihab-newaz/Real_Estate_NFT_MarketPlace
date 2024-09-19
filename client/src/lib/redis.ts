@@ -1,11 +1,9 @@
-// File: src/lib/redis.ts
+// lib/redis.ts
+import { Redis } from '@upstash/redis'
 
-import Redis from 'ioredis';
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+})
 
-let redis: Redis | null = null;
-
-if (process.env.REDIS_URL) {
-    redis = new Redis(process.env.REDIS_URL);
-}
-
-export default redis;
+export default redis
