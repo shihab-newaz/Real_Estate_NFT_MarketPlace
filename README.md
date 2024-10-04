@@ -79,7 +79,7 @@ Prerequisites
 
 - Ensure you're in the root directory of the project.
 - Build the Docker image:
-docker build -t <image-name> .
+docker build -t <image-name>.
 
 - Once the build is complete, you can run the container locally:
 docker run -p 3000:3000 -p 6379:6379 <image-name>
