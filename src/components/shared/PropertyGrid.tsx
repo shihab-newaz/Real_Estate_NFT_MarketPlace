@@ -1,8 +1,7 @@
 // components/shared/PropertyGrid.tsx
 import React from 'react';
-import { Property } from '@/hooks/usePropertySearch';
 import PropertyCard from '@/components/shared/PropertyCard';
-import { PropertyCardProps } from '@/types/property';
+import { Property,PropertyCardProps } from '@/types/property';
 
 export interface PropertyGridProps {
   properties: Property[];
