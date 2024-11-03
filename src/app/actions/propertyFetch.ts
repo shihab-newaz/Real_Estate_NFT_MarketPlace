@@ -3,8 +3,7 @@
 
 import { ethers } from 'ethers';
 import { NFT_MARKETPLACE_ABI, NFT_MARKETPLACE_ADDRESS } from '@/utils/contractUtil';
-import { Property } from '@/types/property';
-import { revalidatePath } from 'next/cache';
+
 
 
 export async function fetchProperties() {

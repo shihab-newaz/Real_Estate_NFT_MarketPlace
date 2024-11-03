@@ -29,11 +29,10 @@ module.exports = {
     sources: "./contracts",
     tests: "./test",
     cache: "./cache",
-    artifacts: "..client/src/utils"
+    artifacts: "../src/artifacts",
   },
-  // Add this new configuration to generate artifacts in ../src/utils
   outputArtifacts: {
-    path: path.resolve(__dirname, '../src/utils'),
+    path: path.resolve(__dirname, '../src/artifacts'),
     runOnCompile: true,
   },
 };
